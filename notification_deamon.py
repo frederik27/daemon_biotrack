@@ -42,7 +42,6 @@ def get_diff_time(notificationTypeID, employeeID, date):
     return "%s" % diffTime
 
 def send_notification(data):
-    print("Я ЗАШЕЛ СЮДА")
     utils.update_nofications(data['ID'], 1)
     print("Notification daemon -> Busy: 1" )
 
@@ -96,6 +95,7 @@ def send_notification(data):
 
         #getting different time. it depends on notification type
         diffTime = get_diff_time(data['notification_typeID'], data['employeeID'], time[0])
+        diffTime = timetostr(diffTime)
 
         msg = msg.replace('{time}', time[1])
         msg = msg.replace('{diffTime}', diffTime)
@@ -104,7 +104,6 @@ def send_notification(data):
 
         msgTo = personCursor[0]['email']
         if data['type'] == 'company':
-            print("COMPANY")
             saveMsg = msg
             personsData = utils.get_persons_by_user_ids(data['sendTo'])
             for personData in personsData:
@@ -119,7 +118,6 @@ def send_notification(data):
                 st = utils.save_mail(msgTo, msg, msg_title, fromEmail, personCursor[0]['companyID'],
                                      datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
         else:
-            print("MY")
             msg = msg.replace('{FullName}', fullName)
             print('Notification daemon -> message send to %s' % msgTo)
             st = utils.save_mail(msgTo, msg, msg_title, fromEmail, personCursor[0]['companyID'] , datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -137,9 +135,9 @@ def timetostr(t):
     hour = int(stime[0])
     min = int(stime[1])
     if hour > 0:
-        res += str(hour) + ' ч '
+        res += str(hour) + 'ч ' if min > 0 else str(hour) + 'ч'
     if min > 0:
-        res += str(min) + ' мин.'
+        res += str(min) + 'мин'
     return res
 
 

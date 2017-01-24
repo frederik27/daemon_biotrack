@@ -584,7 +584,7 @@ def get_person_by_notification_settings_id(usersID):
         LEFT JOIN %s AS ns ON ns.userID = p.ID
         WHERE ns.userID IN (%s)""" % \
                  (globals.tbl_person, globals.tbl_notification_setting, usersID)
-    print("SQL ", sqlCompany)
+
     with mutex:
         return conBase.exec_query(sqlCompany)
 
