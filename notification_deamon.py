@@ -135,9 +135,9 @@ def timetostr(t):
     hour = int(stime[0])
     min = int(stime[1])
     if hour > 0:
-        res += str(hour) + 'ч ' if min > 0 else str(hour) + 'ч'
+        res += str(hour) + ' ч ' if min > 0 else str(hour) + ' ч'
     if min > 0:
-        res += str(min) + 'мин'
+        res += str(min) + ' мин'
     return res
 
 
