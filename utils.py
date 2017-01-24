@@ -337,7 +337,7 @@ def get_notifications():
     #         """ % (globals.tbl_notification, globals.tbl_notification_type, globals.tbl_employee, globals.tbl_person, globals.tbl_billing_status )
     sql = """
 			SELECT n.ID, n.notification_settingID, n.notification_typeID, n.employeeID, n.dateTime, n.eventTime,
-			n.lang, n.type, n.sendTo, nt.name
+			n.lang, n.type, nt.name
 			FROM %s n
 				 JOIN %s  nt ON n.notification_typeID = nt.ID
 				 INNER JOIN %s employee ON employee.ID = n.employeeID AND employee.state = 'active' AND employee.isActive = 1
@@ -558,17 +558,50 @@ def listenPort(port):
         print('Connected with ' + addr[0] + ':' + str(addr[1]))
 
 
-def get_persons_by_user_ids(usersID):
+###
+#   Using by @notification_deamon
+#   expeced employeeID
+#   returns user's data
+###
+
+def get_persons_by_employee_id(employeeID):
     global conBase, mutex
+
     sql = """
-            SELECT DISTINCT p.lastName, p.firstName, p.email
-            FROM %s p
-            LEFT JOIN %s AS ns ON ns.userID = p.ID
-            WHERE ns.userID IN (%s)""" % \
-                 (globals.tbl_person, globals.tbl_notification_setting, usersID)
+        SELECT p.lastName, p.firstName, p.email
+        FROM %s p
+        WHERE p.ID IN
+        (
+            SELECT DISTINCT ns.userID
+            FROM %s ns
+            WHERE FIND_IN_SET(%d, ns.ids)
+        )
+    """ % (globals.tbl_person, globals.tbl_notification_setting, employeeID)
 
     with mutex:
         return conBase.exec_query(sql)
+
+
+
+
+
+###
+#   Using by @notification_deamon
+#   expected users ID
+#   returns user's data
+
+
+# def get_persons_by_user_ids(usersID):
+#     global conBase, mutex
+#     sql = """
+#             SELECT DISTINCT p.lastName, p.firstName, p.email
+#             FROM %s p
+#             LEFT JOIN %s AS ns ON ns.userID = p.ID
+#             WHERE ns.userID IN (%s)""" % \
+#                  (globals.tbl_person, globals.tbl_notification_setting, usersID)
+#
+#     with mutex:
+#         return conBase.exec_query(sql)
 
 
 

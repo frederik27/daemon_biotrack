@@ -42,7 +42,7 @@ if __name__ == '__main__':
         time.sleep(5)
 
 
-    ### starting all daemons
+    ## starting all daemons
     start_billing_daemon()
     start_infroming_daemon()
     start_notification_daemon()
