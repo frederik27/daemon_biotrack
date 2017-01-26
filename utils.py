@@ -568,15 +568,19 @@ def get_persons_by_employee_id(employeeID):
     global conBase, mutex
 
     sql = """
-        SELECT p.lastName, p.firstName, p.email
+        SELECT DISTINCT p.lastName, p.firstName, uc.username AS email
         FROM %s p
+        LEFT JOIN %s e ON (p.ID = e.ID)
+        LEFT JOIN %s u ON (u.employeeID = e.ID)
+        LEFT JOIN %s uc ON (uc.id = u.user_credential_id)
         WHERE p.ID IN
         (
             SELECT DISTINCT ns.userID
             FROM %s ns
             WHERE FIND_IN_SET(%d, ns.ids)
         )
-    """ % (globals.tbl_person, globals.tbl_notification_setting, employeeID)
+    """ % (globals.tbl_person, globals.tbl_employee, 'user', 'user_credential', globals.tbl_notification_setting, \
+                                                                            employeeID)
 
     with mutex:
         return conBase.exec_query(sql)
